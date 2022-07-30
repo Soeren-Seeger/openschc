@@ -72,7 +72,7 @@ async def app_downlink(request):
             logger.debug("http request body is not ready.")
             return web.json_response({"Status": "Error"}, status=503)
     else:
-        logger.debug(f"content-type must be json or x-raw, "
+        logger.debug("content-type must be json or x-raw, "
                      f"but {request.content_type}")
         return web.json_response({"Status": "Error"}, status=405)
     #
