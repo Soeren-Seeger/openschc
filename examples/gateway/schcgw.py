@@ -60,7 +60,7 @@ async def app_downlink(request):
         if request.can_read_body:
             body = await request.json()
             logger.debug(f"application/json: {body}")
-            body = json.loads(body)
+            body = json.loads(json.dumps(body))
             packet_hex = body.get("hexIPData")
             if packet_hex is None:
                 logger.debug("no payload found.")
@@ -86,7 +86,7 @@ async def app_uplink(request):
         if request.can_read_body:
             body = await request.json()
             logger.debug(body)
-            body = json.loads(body)
+            body = json.loads(json.dumps(body))
             src_l2_addr = body.get("devL2Addr")
             if src_l2_addr is None:
                 logger.debug("no IP addr found.")
