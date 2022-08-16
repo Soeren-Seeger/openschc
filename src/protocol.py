@@ -20,6 +20,7 @@ from compr_core import Compressor, Decompressor
 from gen_utils import dtrace
 import binascii
 
+
 # ---------------------------------------------------------------------------
 
 class SessionManager:
@@ -31,6 +32,7 @@ class SessionManager:
 
     When 'unique_peer' is true, the l2_address for another peer is 'None'.
     """
+
     def __init__(self, protocol, unique_peer):
         self.protocol = protocol
         self.unique_peer = unique_peer
@@ -47,7 +49,7 @@ class SessionManager:
         return session
 
     def _add_session(self, session_id, session):
-        session_id = self._filter_session_id(session_id)        
+        session_id = self._filter_session_id(session_id)
         assert session_id not in self.session_table
         self.session_table[session_id] = session
 
@@ -56,7 +58,7 @@ class SessionManager:
         dprint("SessionManager: deleted", session_id)
 
     def create_reassembly_session(self, context, rule, session_id):
-        session_id = self._filter_session_id(session_id)        
+        session_id = self._filter_session_id(session_id)
         l2_address, rule_id, unused, dtag = session_id
         if self.unique_peer:
             l2_address = None
@@ -82,11 +84,11 @@ class SessionManager:
         rule_id = rule[T_RULEID]
         rule_id_length = rule[T_RULEIDLENGTH]
         dtag_length = rule[T_FRAG][T_FRAG_PROF][T_FRAG_DTAG]
-        dtag_limit = 2**dtag_length
+        dtag_limit = 2 ** dtag_length
 
         for dtag in range(0, dtag_limit):
             session_id = (l2_address, rule_id, rule_id_length, dtag)
-            session_id = self._filter_session_id(session_id)            
+            session_id = self._filter_session_id(session_id)
             if session_id not in self.session_table:
                 break
 
@@ -104,13 +106,14 @@ class SessionManager:
             session = FragmentAckOnError(self.protocol, context, rule, dtag)
         else:
             raise ValueError("invalid FRMode: {}".format(mode))
-        self._add_session(session_id, session)        
+        self._add_session(session_id, session)
         setattr(session, "_session_id", session_id)
         return session
 
     def get_state_info(self, **kw):
         return [(session_id, session.get_state_info(**kw))
-                for (session_id, session) in self.session_table.items() ]
+                for (session_id, session) in self.session_table.items()]
+
 
 # ---------------------------------------------------------------------------
 
@@ -135,7 +138,7 @@ class SCHCProtocol:
         self.decompressor = Decompressor(self)
         self.session_manager = SessionManager(self, unique_peer)
         if ((isinstance(config, object) and hasattr(config, "debug_level")) or
-            (isinstance(config, dict) and config.get("debug_level", 0))):
+                (isinstance(config, dict) and config.get("debug_level", 0))):
             set_debug_output(True)
 
     def _log(self, message):
@@ -149,7 +152,6 @@ class SCHCProtocol:
 
     def get_system(self):
         return self.system
-
 
     def _apply_compression(self, dst_l3_address, raw_packet):
         """Apply matching compression rule if one exists.
@@ -193,11 +195,10 @@ class SCHCProtocol:
 
         return schc_packet
 
-
     def _make_frag_session(self, dst_l2_address, direction):
         """Search a fragmentation rule, create a session for it, return None if not found"""
         frag_rule = self.rule_manager.FindFragmentationRule(
-                deviceID=dst_l2_address, direction=direction)
+            deviceID=dst_l2_address, direction=direction)
         if frag_rule is None:
             self._log("fragmentation rule not found")
             return None
@@ -210,11 +211,10 @@ class SCHCProtocol:
         session = self.session_manager.create_fragmentation_session(
             dst_l2_address, context, rule)
         if session is None:
-            self._log("fragmentation session could not be created") # XXX warning
+            self._log("fragmentation session could not be created")  # XXX warning
             return None
 
         return session
-
 
     def schc_send(self, dst_l2_address, dst_l3_address, raw_packet):
         """Starting to send SCHC packet after called by L3.
@@ -235,7 +235,7 @@ class SCHCProtocol:
             self._log("fragmentation not needed size={}".format(
                 packet_bbuf.count_added_bits()))
             args = (packet_bbuf.get_content(), dst_l2_address)
-            self.scheduler.add_event(0, self.layer2.send_packet, args) # XXX: what about directly send?
+            self.scheduler.add_event(0, self.layer2.send_packet, args)  # XXX: what about directly send?
             return
 
         # Start a fragmentation session from rule database
@@ -253,33 +253,35 @@ class SCHCProtocol:
         packet_bbuf = BitBuffer(raw_packet)
         dprint('SCHC: recv from L2:', b2hex(packet_bbuf.get_content()))
         frag_rule = self.rule_manager.FindFragmentationRule(
-                deviceID=dst_l2_addr, packet=packet_bbuf)
+            deviceID=dst_l2_addr, packet=packet_bbuf)
 
-        dtrace ('\t\t\t-----------{:3}--------->|'.format(len(packet_bbuf._content)))
-
-        dtag_length = frag_rule[T_FRAG][T_FRAG_PROF][T_FRAG_DTAG]
-        if dtag_length > 0:
-            dtag = packet_bbuf.get_bits(dtag_length, position=frag_rule[T_RULEIDLENGTH])
+        dtrace('\t\t\t-----------{:3}--------->|'.format(len(packet_bbuf._content)))
+        if frag_rule is None:
+            print("SKIP Fragmentation - no Frag MODE")
+            self.process_decompress(packet_bbuf, dst_l2_addr, "UP")
         else:
-            dtag = None # XXX: get_bits(0) should work?
+            dtag_length = frag_rule[T_FRAG][T_FRAG_PROF][T_FRAG_DTAG]
+            if dtag_length > 0:
+                dtag = packet_bbuf.get_bits(dtag_length, position=frag_rule[T_RULEIDLENGTH])
+            else:
+                dtag = None  # XXX: get_bits(0) should work?
 
-        rule_id = frag_rule[T_RULEID]
-        rule_id_length = frag_rule[T_RULEIDLENGTH]
-        session_id = (dst_l2_addr, rule_id, rule_id_length, dtag)
-        session = self.session_manager.find_session(session_id)
+            rule_id = frag_rule[T_RULEID]
+            rule_id_length = frag_rule[T_RULEIDLENGTH]
+            session_id = (dst_l2_addr, rule_id, rule_id_length, dtag)
+            session = self.session_manager.find_session(session_id)
 
-        if session is not None:
-            dprint("{} session found".format(
-                session.get_session_type().capitalize()),
-                session.__class__.__name__)
-        else:
-            context = None
-            session = self.session_manager.create_reassembly_session(
-                context, frag_rule, session_id)
-            dprint("New reassembly session created", session.__class__.__name__)
+            if session is not None:
+                dprint("{} session found".format(
+                    session.get_session_type().capitalize()),
+                    session.__class__.__name__)
+            else:
+                context = None
+                session = self.session_manager.create_reassembly_session(
+                    context, frag_rule, session_id)
+                dprint("New reassembly session created", session.__class__.__name__)
 
-        session.receive_frag(packet_bbuf, dtag)
-
+            session.receive_frag(packet_bbuf, dtag)
 
     def process_decompress(self, packet_bbuf, dev_l2_addr, direction):
         rule = self.rule_manager.FindRuleFromSCHCpacket(packet_bbuf, dev_l2_addr)
@@ -317,13 +319,13 @@ class SCHCProtocol:
     #    self.scheduler.add_event(0, self.layer3.recv_packet, args)
 
     def get_state_info(self, **kw):
-        result =  {
+        result = {
             "sessions": self.session_manager.get_state_info(**kw)
         }
         return result
 
     def get_init_info(self, **kw):
-        result =  {
+        result = {
             "role": self.role,
             "unique-peer": self.unique_peer
         }
