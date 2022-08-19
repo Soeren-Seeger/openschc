@@ -310,9 +310,9 @@ class SCHCProtocol:
             raw_packet = self.decompressor.decompress(packet_bbuf, rule, direction)
             dprint("---- Decompression result ----")
             dprint(raw_packet)
-            args = (dev_l2_addr, raw_packet)
+            #args = (dev_l2_addr, raw_packet)
             #self.scheduler.add_event(0, self.layer3.recv_packet, args)
-            self.layer3.recv_packet(args)
+            self.layer3.recv_packet(dev_l2_addr, raw_packet)
 
     # def process_decompress(self, context, dev_l2_addr, schc_packet):
     #    self._log("compression rule_id={}".format(context["comp"]["ruleID"]))
