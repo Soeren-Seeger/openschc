@@ -38,10 +38,12 @@ class AiohttpUpperLayer:
                 None, self.pcap.sendpacket, data)
 
     def recv_packet(self, dst_l2_addr, raw_packet):
+        print("SENDING....")
         """Processing a packet from the SCHC layer to northbound."""
         self.system.log("L3", "recv packet from devaddr={} packet={}".format(
                 dst_l2_addr, raw_packet.hex()))
         route_info = self.lookup_route(raw_packet[24:40])
+        print("Route:", route_info)
         if route_info is None:
             self.system.log("L3", "no route for {}".format(
                     raw_packet[24:40].hex()))

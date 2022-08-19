@@ -285,6 +285,7 @@ class SCHCProtocol:
 
     def process_decompress(self, packet_bbuf, dev_l2_addr, direction):
         rule = self.rule_manager.FindRuleFromSCHCpacket(packet_bbuf, dev_l2_addr)
+        print(rule)
         if rule is None:
             # reject it.
             self._log("No compression rule for SCHC packet, sender L2addr={}"

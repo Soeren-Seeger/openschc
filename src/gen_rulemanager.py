@@ -1198,6 +1198,7 @@ class RuleManager:
         - if raw_packet is not None, it compares the rule_id with the packet.
         - if the direction and the deviceID is matched.
         """
+        return None
         if direction is not None and deviceID is None:
             for d in self._ctxt:
                 for r in d["SoR"]:

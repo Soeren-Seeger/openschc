@@ -6,8 +6,8 @@
     "ssl_verify": false,
     "my_cert": "testgw1-cert.pem",
     "rule_config": [
-        { "rule_file": "rule-comp.json" },
-        { "rule_file": "rule-a234.json", "devL2Addr": "A2345678" },
+        { "rule_file": "rule-lora.json" },
+        { "rule_file": "rule-a234.json", "devL2Addr": "AAA00001" },
         { "rule_file": "rule-b234.json", "devL2Addr": "B2345678" }
     ],
     "route": {
@@ -16,7 +16,7 @@
         "2001:8d8:1801:84dd::1": { "ifname": "lo", "dst": "" },
         "2001:8d8:1801:84dd::2": { "ifname": "lo", "dst": "" },
         "2001:8d8:1801:84dd::3": { "ifname": "lo", "dst": "" },
-        "2001:8d8:1801:84dd:68ac:3822:b391:4580": { "ifname": "lpwan", "dst": "A0000001" },
+        "2001:8d8:1801:84dd:68ac:3822:b391:4580": { "ifname": "lpwan", "dst": "AAA00001" },
         "2001:8d8:1801:84dd::b000:1": { "ifname": "lpwan", "dst": "B0000001" },
         "2001:8d8:1801:84dd::a123:4567": { "ifname": "lpwan", "dst": "A1234567" }
     },
