@@ -38,7 +38,7 @@ class AiohttpUpperLayer:
                 None, self.pcap.sendpacket, data)
 
     def recv_packet(self, dst_l2_addr, raw_packet):
-        print("FOLLOW: netAIO LAYER3 recv_packet")
+        print("####################FOLLOW: netAIO LAYER3 recv_packet############################")
         """Processing a packet from the SCHC layer to northbound."""
         self.system.log("L3", "recv packet from devaddr={} packet={}".format(
                 dst_l2_addr, raw_packet.hex()))
@@ -54,6 +54,7 @@ class AiohttpUpperLayer:
                 raw_packet))
 
     async def send_packet(self, packet):
+        print("---------------WRONG------------------------")
         dst_l3_addr = packet[24:40]
         route_info = self.lookup_route(dst_l3_addr)
         if route_info is None:
@@ -79,11 +80,12 @@ class AiohttpLowerLayer():
     async def recv_packet(self, data_hex, dst_l2_addr=None):
         """Processing a packet from the southbound to the SCHC layer"""
         # XXX need to check for asyncio
-        print("FOLLOW: netAIO recv_packet")
+        print("#####################################################FOLLOW: netAIO recv_packet############################################")
         self.protocol.schc_recv(dst_l2_addr, data_hex)
 
     def send_packet(self, data, dst_l2_addr=None, callback=None,
                     callback_args=tuple()):
+        print("------------------------WRONG---------------------------")
         """Processing a packet from the SCHC layer to southbound"""
         dprint("L2: sending a packet", data.hex())
         self.system.log("L2", "send packet to devaddr={} packet={}".format(
@@ -133,6 +135,9 @@ class AiohttpScheduler():
 
     def __init__(self, loop):
         self.loop = loop
+        print("########################1#")
+        dprint("#######################2#")
+     
         #super().__init__()
 
     def get_clock(self):
