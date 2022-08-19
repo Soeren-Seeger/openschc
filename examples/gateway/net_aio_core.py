@@ -38,7 +38,7 @@ class AiohttpUpperLayer:
                 None, self.pcap.sendpacket, data)
 
     def recv_packet(self, dst_l2_addr, raw_packet):
-        print("SENDING....")
+        print("FOLLOW: netAIO LAYER3 recv_packet")
         """Processing a packet from the SCHC layer to northbound."""
         self.system.log("L3", "recv packet from devaddr={} packet={}".format(
                 dst_l2_addr, raw_packet.hex()))
@@ -79,6 +79,7 @@ class AiohttpLowerLayer():
     async def recv_packet(self, data_hex, dst_l2_addr=None):
         """Processing a packet from the southbound to the SCHC layer"""
         # XXX need to check for asyncio
+        print("FOLLOW: netAIO recv_packet")
         self.protocol.schc_recv(dst_l2_addr, data_hex)
 
     def send_packet(self, data, dst_l2_addr=None, callback=None,
@@ -138,7 +139,7 @@ class AiohttpScheduler():
         return self.loop.time()
 
     def add_event(self, time_in_sec, event_function, event_args):
-        dprint(f"Add event: "
+        print(f"Add event: "
                f"call in {time_in_sec} sec: "
                f"{event_function.__name__} {event_args}")
         assert time_in_sec >= 0
