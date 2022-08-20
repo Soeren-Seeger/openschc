@@ -6,7 +6,7 @@ from scapy.contrib.coap import CoAP
 from scapy.layers.inet import UDP
 from scapy.layers.inet6 import IPv6
 import binascii
-import compr_core
+from compr_core import *
 from gen_base_import import *  # used for now for differing modules in py/upy
 from gen_utils import dprint
 
@@ -89,7 +89,6 @@ class AiohttpUpperLayer:
         # udp_pkg.chksum = int(raw_packet[('UDP.CKSUM', 1)][1])
 
 
-        print(raw_packet[(T_COAP_TOKEN, 1)][0])
         coap_pkg = CoAP()
         coap_pkg.ver = int(raw_packet[(T_COAP_VERSION, 1)][0])
         coap_pkg.type = int(raw_packet[(T_COAP_TYPE, 1)][0])
