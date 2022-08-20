@@ -40,6 +40,8 @@ class AiohttpUpperLayer:
     def recv_packet(self, dst_l2_addr, raw_packet):
         print("FOLLOW: netAIO LAYER3 recv_packet")
         """Processing a packet from the SCHC layer to northbound."""
+
+        '''
         self.system.log("L3", "recv packet from devaddr={} packet={}".format(
                 dst_l2_addr, raw_packet.hex()))
         route_info = self.lookup_route(raw_packet[24:40])
@@ -49,9 +51,11 @@ class AiohttpUpperLayer:
                     raw_packet[24:40].hex()))
             return
         l2_info = self.lookup_interface(route_info["ifname"])
-        asyncio.ensure_future(self.async_pcap_send(l2_info["pcap"],
-                route_info["dst_raw"] + l2_info["addr_raw"] + l2_info["type"] + 
-                raw_packet))
+        asyncio.ensure_future((self.async_pcap_send(l2_info["pcap"],
+                                                    route_info["dst_raw"] + l2_info["addr_raw"] + l2_info["type"] + 
+                raw_packet))'''
+
+        dst_v6 = raw_packet["IPV6.APP_PREFIX"]
 
     async def send_packet(self, packet):
         dst_l3_addr = packet[24:40]
