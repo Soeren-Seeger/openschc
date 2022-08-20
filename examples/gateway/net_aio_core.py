@@ -82,11 +82,14 @@ class AiohttpUpperLayer:
         ipv6_pkg.dst = ':'.join(ipv6_dst[i:i + 4] for i in range(0, len(ipv6_dst), 4))
 
         udp_pkg = UDP()
-        udp_pkg.sport = int((binascii.hexlify(raw_packet[('UDP.DEV_PORT', 1)][0])).decode('ascii'))
-        udp_pkg.dport = int((binascii.hexlify(raw_packet[('UDP.APP_PORT', 1)][0])).decode('ascii'))
+        udp_pkg.sport = raw_packet[('UDP.DEV_PORT', 1)][0])).decode('ascii')
+        udp_pkg.dport = raw_packet[('UDP.APP_PORT', 1)][0])).decode('ascii')
         # udp_pkg.len = int(raw_packet[('UDP.LEN', 1)][1])
+        # udp_pkg.len = 30
         # udp_pkg.chksum = int(raw_packet[('UDP.CKSUM', 1)][1])
 
+
+        print(raw_packet[(T_COAP_TOKEN, 1)][0])
         coap_pkg = CoAP()
         coap_pkg.ver = int(raw_packet[(T_COAP_VERSION, 1)][0])
         coap_pkg.type = int(raw_packet[(T_COAP_TYPE, 1)][0])
