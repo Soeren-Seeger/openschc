@@ -1,6 +1,12 @@
 import asyncio
 import aiohttp
 
+from scapy.all import *
+from scapy.contrib.coap import CoAP
+from scapy.layers.inet import UDP
+from scapy.layers.inet6 import IPv6
+import binascii
+import compr_core
 from gen_base_import import *  # used for now for differing modules in py/upy
 from gen_utils import dprint
 
@@ -55,7 +61,53 @@ class AiohttpUpperLayer:
                                                     route_info["dst_raw"] + l2_info["addr_raw"] + l2_info["type"] + 
                 raw_packet))'''
 
-        dst_v6 = raw_packet["IPV6.APP_PREFIX"]
+        ipv6_pkg = IPv6()
+
+        ipv6_dst_pre = binascii.hexlify(raw_packet[('IPV6.APP_PREFIX', 1)][0])
+        ipv6_dst_iid = binascii.hexlify(raw_packet[('IPV6.APP_IID', 1)][0])
+        ipv6_dst = str((ipv6_dst_pre + ipv6_dst_iid).decode('ascii'))
+
+        ipv6_src_pre = binascii.hexlify(raw_packet[('IPV6.DEV_PREFIX', 1)][0])
+        ipv6_src_iid = binascii.hexlify(raw_packet[('IPV6.DEV_IID', 1)][0])
+        ipv6_src = str((ipv6_src_pre + ipv6_src_iid).decode('ascii'))
+
+        ipv6_pkg.version = int(raw_packet[('IPV6.VER', 1)][0])
+        ipv6_pkg.tc = int(raw_packet[('IPV6.TC', 1)][0])
+        ipv6_pkg.fl = int(raw_packet[('IPV6.FL', 1)][0])
+        # ipv6_pkg.plen = 30
+        # ipv6_pkg.plen = int(raw_packet[('IPV6.LEN', 1)][1])
+        ipv6_pkg.nh = int(raw_packet[('IPV6.NXT', 1)][0])
+        ipv6_pkg.hlim = int(raw_packet[('IPV6.HOP_LMT', 1)][0])
+        ipv6_pkg.src = ':'.join(ipv6_src[i:i + 4] for i in range(0, len(ipv6_src), 4))
+        ipv6_pkg.dst = ':'.join(ipv6_dst[i:i + 4] for i in range(0, len(ipv6_dst), 4))
+
+        udp_pkg = UDP()
+        udp_pkg.sport = int((binascii.hexlify(raw_packet[('UDP.DEV_PORT', 1)][0])).decode('ascii'))
+        udp_pkg.dport = int((binascii.hexlify(raw_packet[('UDP.APP_PORT', 1)][0])).decode('ascii'))
+        # udp_pkg.len = int(raw_packet[('UDP.LEN', 1)][1])
+        # udp_pkg.chksum = int(raw_packet[('UDP.CKSUM', 1)][1])
+
+        coap_pkg = CoAP()
+        coap_pkg.ver = int(raw_packet[(T_COAP_VERSION, 1)][0])
+        coap_pkg.type = int(raw_packet[(T_COAP_TYPE, 1)][0])
+        coap_pkg.tkl = int(raw_packet[(T_COAP_TKL, 1)][0])
+        coap_pkg.code = int(raw_packet[(T_COAP_CODE, 1)][0])
+        coap_pkg.msg_id = int(raw_packet[(T_COAP_MID, 1)][0])
+        coap_pkg.token = b'0'
+        PATH = raw_packet[('COAP.Uri-Path', 1)][0]
+        coap_pkg.options = [('Uri-Path', PATH)]
+
+        data = "payme"
+        datadata = b'\xff'
+        datadata += bytes(data, 'ascii')
+        print(datadata)
+
+        # pkg = ipv6_pkg / udp_pkg / Raw(load=data)
+        pkg = ipv6_pkg / udp_pkg / coap_pkg / Raw(load=datadata)
+
+        pkg.show2()
+
+        send(pkg, iface="ens192")
 
     async def send_packet(self, packet):
         print("---------------WRONG------------------------")
