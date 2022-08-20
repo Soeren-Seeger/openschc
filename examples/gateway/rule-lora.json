@@ -2,7 +2,7 @@
     "DeviceID" : "ABC00001",
     "SoR" : [
 	 {
-	    "RuleID": 100,  //CoAP UPLINK
+	    "RuleID": 100,
 	    "RuleIDLength": 8,
 	    "Compression": [
 		{"FID": "IPV6.VER", "TV": 6, "MO": "equal", "CDA": "not-sent"},
@@ -25,7 +25,7 @@
         {"FID": "COAP.CODE",    "TV": 2,    "MO": "equal","CDA": "not-sent"},
         {"FID": "COAP.MID",                 "MO": "MSB","MO.VAL": 4 ,"CDA": "value-sent"},
         {"FID": "COAP.TOKEN",   "TV": 130,  "MO": "equal","CDA": "not-sent"},
-        {"FID": "COAP.Uri-Path", "DI": "UP","MO": "ignore","CDA": "value-sent"},
+        {"FID": "COAP.Uri-Path", "DI": "UP", "TV": "basic" ,"MO": "equal","CDA": "not-sent"},
         {"FID": "COAP.END",      "DI": "UP", "TV": 255, "MO": "equal", "CDA": "not-sent"}
 	    ]
 	 },
