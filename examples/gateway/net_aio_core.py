@@ -103,7 +103,7 @@ class AiohttpUpperLayer:
         #datadata += bytes(data, 'ascii')
         payload = int(payload, base=16)
         payload = f'{payload:064x}'
-        datadata += binascii.unhexlify(payload)
+        datadata += bytes.fromhex(payload)
         print(datadata)
 
         # pkg = ipv6_pkg / udp_pkg / Raw(load=data)
