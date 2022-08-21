@@ -316,13 +316,12 @@ class SCHCProtocol:
             #args = (dev_l2_addr, raw_packet)
             #self.scheduler.add_event(0, self.layer3.recv_packet, args)
 
-            packet_bbuf.set_read_position((packet_bbuf._rpos)-1)
-            payload = packet_bbuf.get_content()
-            print("DATAAAAA:")
-            #bit = packet_bbuf.get_bits(packet_bbuf._rpos)
-            #print(bit)
-            print(binascii.hexlify(payload).decode('ascii'))
-            self.layer3.recv_packet(dev_l2_addr, raw_packet, payload)
+            payload_bin = packet_bbuf.get_content()
+
+            payload = binascii.hexlify(payload_bin).decode('ascii')
+            print("Payload:")
+            print(payload)
+            self.layer3.recv_packet(dev_l2_addr, raw_packet, payload[1:])
 
     # def process_decompress(self, context, dev_l2_addr, schc_packet):
     #    self._log("compression rule_id={}".format(context["comp"]["ruleID"]))
