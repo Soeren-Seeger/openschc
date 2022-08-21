@@ -101,6 +101,7 @@ class AiohttpUpperLayer:
 
         datadata = b'\xff'
         #datadata += bytes(data, 'ascii')
+        print(payload)
         datadata += bytes.fromhex(payload)
         print(datadata)
 
