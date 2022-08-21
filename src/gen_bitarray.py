@@ -249,7 +249,7 @@ class BitBuffer:
         assert self._rpos % BITS_PER_BYTE == 0
         #nb_bits = self.count_remaining_bits()
         #assert nb_bits % BITS_PER_BYTE == 0
-        return self._content[self._rpos-1 // BITS_PER_BYTE:]
+        return self._content[self._rpos // BITS_PER_BYTE:]
 
     def count_remaining_bits(self):
         """return the number of the remaining bits from
