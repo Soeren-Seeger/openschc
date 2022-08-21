@@ -250,6 +250,7 @@ class SCHCProtocol:
 
     def schc_recv(self, dst_l2_addr, raw_packet):
         """Receiving a SCHC packet from a lower layer."""
+        print(raw_packet) #############################################################################DELETE
         packet_bbuf = BitBuffer(raw_packet)
         dprint('SCHC: recv from L2:', b2hex(packet_bbuf.get_content()))
         frag_rule = self.rule_manager.FindFragmentationRule(
