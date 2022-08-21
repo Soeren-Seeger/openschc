@@ -102,12 +102,11 @@ class AiohttpUpperLayer:
         datadata = b'\xff'
         #datadata += bytes(data, 'ascii')
         print(payload)
-        datadata += bytes.fromhex(payload)
+        datadata += binascii.hexlify(payload)
         print(datadata)
 
         # pkg = ipv6_pkg / udp_pkg / Raw(load=data)
         pkg = ipv6_pkg / udp_pkg / coap_pkg / Raw(load=datadata)
-
         pkg.show2()
 
         send(pkg, iface="ens192")
