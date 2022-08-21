@@ -284,6 +284,8 @@ class SCHCProtocol:
             session.receive_frag(packet_bbuf, dtag)
 
     def process_decompress(self, packet_bbuf, dev_l2_addr, direction):
+        print("BUFFFFFFFFFFFFFFER111111:")
+        print(packet_bbuf._rpos)
         rule = self.rule_manager.FindRuleFromSCHCpacket(packet_bbuf, dev_l2_addr)
         print(rule)
         if rule is None:
@@ -312,6 +314,8 @@ class SCHCProtocol:
             dprint(raw_packet)
             #args = (dev_l2_addr, raw_packet)
             #self.scheduler.add_event(0, self.layer3.recv_packet, args)
+            print("BUFFFFFFFFFFFFFFER222222:")
+            print(packet_bbuf._rpos)
             self.layer3.recv_packet(dev_l2_addr, raw_packet)
 
     # def process_decompress(self, context, dev_l2_addr, schc_packet):
