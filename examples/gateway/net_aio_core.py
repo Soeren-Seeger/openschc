@@ -104,12 +104,21 @@ class AiohttpUpperLayer:
         #payload = int(payload, base=16)
         #payload = f'{payload:064x}'
         print(payload)
+        payload = 'ff'+payload
+        print(payload)
+        pay_raw = b''
+        try:
+            pay_raw = bytes.fromhex(payload)
+        except ValueError:
+            print("Odd payload - remove foreign padding zero")
+            payload = payload[:-1]
+            print('corrected payload', str(payload))
+            pay_raw = bytes.fromhex(payload)
 
-        datadata = bytes.fromhex(payload)
-        print(datadata)
-
+        print("pay_raw:")
+        print(pay_raw)
         # pkg = ipv6_pkg / udp_pkg / Raw(load=data)
-        pkg = ipv6_pkg / udp_pkg / coap_pkg / Raw(load=datadata)
+        pkg = ipv6_pkg / udp_pkg / coap_pkg / Raw(load=pay_raw)
         pkg.show2()
 
         send(pkg, iface="ens192")
