@@ -99,11 +99,13 @@ class AiohttpUpperLayer:
         PATH = raw_packet[('COAP.Uri-Path', 1)][0]
         coap_pkg.options = [('Uri-Path', PATH)]
 
-        datadata = b'\xff'
+        #datadata = b'\xff'
         #datadata += bytes(data, 'ascii')
-        payload = int(payload, base=16)
-        payload = f'{payload:064x}'
-        datadata += bytes.fromhex(payload)
+        #payload = int(payload, base=16)
+        #payload = f'{payload:064x}'
+        print(payload)
+
+        datadata = bytes.fromhex(payload)
         print(datadata)
 
         # pkg = ipv6_pkg / udp_pkg / Raw(load=data)
