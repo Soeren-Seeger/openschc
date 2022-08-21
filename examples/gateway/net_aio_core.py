@@ -43,7 +43,7 @@ class AiohttpUpperLayer:
         self.system.scheduler.loop.run_in_executor(
                 None, self.pcap.sendpacket, data)
 
-    def recv_packet(self, dst_l2_addr, raw_packet):
+    def recv_packet(self, dst_l2_addr, raw_packet, payload):
         print("####################FOLLOW: netAIO LAYER3 recv_packet############################")
         """Processing a packet from the SCHC layer to northbound."""
 
@@ -99,7 +99,9 @@ class AiohttpUpperLayer:
         PATH = raw_packet[('COAP.Uri-Path', 1)][0]
         coap_pkg.options = [('Uri-Path', PATH)]
 
-        data = "payme"
+        data = binascii.unhexlify(payload).decode('ascii')
+        print("CoAP Payload:")
+        print(data)
         datadata = b'\xff'
         datadata += bytes(data, 'ascii')
         print(datadata)
