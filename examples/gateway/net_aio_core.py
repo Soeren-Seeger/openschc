@@ -201,15 +201,15 @@ class AiohttpLowerLayer():
 
     async def _do_post_data(self, url, data, verify):
         headers = {"content-type": "application/json"}
-        values = json.load(data)
+        #values = json.load(data)
 
-        l2 = values["devL2Addr"]
-        url = url + f"/in/{l2}"
+        #l2 = values["devL2Addr"]
+        #url = url + f"/in/{l2}"
 
-        data = values["hexSCHCData"]
+        #data = values["hexSCHCData"]
 
-        print(url)
-        print(data)
+        #print(url)
+        print(type(data))
         async with aiohttp.ClientSession() as session:
             #await session.post(url+"/in/{}", json=data, ssl=verify)
 
