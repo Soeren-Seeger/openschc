@@ -205,10 +205,11 @@ class AiohttpLowerLayer():
 
         #l2 = values["devL2Addr"]
         #url = url + f"/in/{l2}"
+        url = url + f"/in/AA11"
 
         #data = values["hexSCHCData"]
 
-        #print(url)
+        print(url)
         print(type(data))
         async with aiohttp.ClientSession() as session:
             #await session.post(url+"/in/{}", json=data, ssl=verify)
