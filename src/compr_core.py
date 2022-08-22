@@ -708,7 +708,8 @@ class Decompressor:
             #try:
             print("compressor-core:  SCHC IPV6 Device IID - Value send - apply correct format ")
             val = in_bbuf.get_bits_as_buffer(size)
-            print(val._content)
+            vall = val.get_content()
+            print(vall)
             #val = in_bbuf.get_bits(size)
             #print(val)
             #val = hex(val)
