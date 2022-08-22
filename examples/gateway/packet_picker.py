@@ -30,7 +30,7 @@ def cb_post(ts, pkt, cb_arg, raw_packet=False):
     headers = cb_arg.get("headers")
     if raw_packet is False:
         # skip the pcap header.
-        packet = pkt[4:].hex()
+        packet = pkt[14:].hex()
         print("1 Hex PKG:", packet)
     else:
         packet = pkt.hex()
