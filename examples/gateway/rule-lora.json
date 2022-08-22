@@ -127,7 +127,7 @@
    },
       {
     "RuleID": 6,
-    "RuleIDLength": 3,
+    "RuleIDLength": 8,
     "Compression": [
       {"FID": "IPV6.VER", "TV": 6, "MO": "equal", "CDA": "not-sent"},
       {"FID": "IPV6.TC",  "TV": 0, "MO": "equal", "CDA": "not-sent"},
