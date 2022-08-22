@@ -1,4 +1,6 @@
 import asyncio
+import json
+
 import aiohttp
 
 from scapy.all import *
@@ -158,7 +160,8 @@ class AiohttpLowerLayer():
                     callback_args=tuple()):
         print("------------------------WRONG---------------------------")
         """Processing a packet from the SCHC layer to southbound"""
-        dprint("L2: sending a packet", data.hex())
+        dprint("L2: sending a pac"
+               "ket", data.hex())
         self.system.log("L2", "send packet to devaddr={} packet={}".format(
                 dst_l2_addr, data.hex()))
         body = json.dumps({"hexSCHCData": data.hex(),
@@ -188,16 +191,35 @@ class AiohttpLowerLayer():
 
     def get_mtu_size(self):
         # XXX how to know the MTU of the LPWA link beyond the NS.
-        return 56
+        return 250
 
     def _post_data(self, *args):
         #t = asyncio.ensure_future(self._do_post_data(*args))
         self._do_post_data(*args)
 
     async def _do_post_data(self, url, data, verify):
-        #headers = {"content-type": "application/json"}
-        async with aiohttp.ClientSession() as session:
-            await session.post(url, json=data, ssl=verify)
+        headers = {"content-type": "application/json"}
+        values = json.load(data)
+
+        l2 = values["devL2Addr"]
+        url = url + f"/in/{l2}"
+
+        data = values["hexSCHCData"]
+
+        print(url)
+        print(data)
+        async with aiohttp.ClientSession(auth=auth) as session:
+            #await session.post(url+"/in/{}", json=data, ssl=verify)
+
+            await session.post(
+                url,
+                data=data,
+                headers=headers,
+                auth=aiohttp.BasicAuth("down", "down"),
+                verify_ssl=False
+            )
+
+
 
 # --------------------------------------------------
 
