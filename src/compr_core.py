@@ -3,6 +3,7 @@
    :platform: Python, Micropython
 """
 import binascii
+import netaddr
 
 from gen_base_import import *
 from gen_utils import dprint
@@ -707,9 +708,14 @@ class Decompressor:
         if (rule[T_FID]) == "IPV6.DEV_IID":
             #try:
             print("compressor-core:  SCHC IPV6 Device IID - Value send - apply correct format ")
-            val = in_bbuf.get_bits_as_buffer(size)
-            vall = val.get_content()
-            print(vall)
+            val = in_bbuf.get_bits(size)
+            ip = netaddr.IPAddress(val)
+            print(ip)
+            bin_ip = binascii.unhexlify(ip)
+            print(bin_ip)
+            #v = struct.pack("i",val)
+
+
             #val = in_bbuf.get_bits(size)
             #print(val)
             #val = hex(val)
