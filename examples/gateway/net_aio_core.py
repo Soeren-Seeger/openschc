@@ -210,7 +210,7 @@ class AiohttpLowerLayer():
 
         print(url)
         print(data)
-        async with aiohttp.ClientSession(auth=auth) as session:
+        async with aiohttp.ClientSession() as session:
             #await session.post(url+"/in/{}", json=data, ssl=verify)
 
             await session.post(
