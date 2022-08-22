@@ -715,6 +715,7 @@ class Decompressor:
             print(bin_ip)
             val = bin_ip
         else:
+            print("NO WHY ??")
             val = in_bbuf.get_bits(size)
 
 
