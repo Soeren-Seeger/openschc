@@ -716,7 +716,9 @@ class Decompressor:
             #except:
              #   print("compressor-core:  !!! apply error on IP_DEV Address. see compr_core.py ln:715")
         else:
-            val = in_bbuf.get_bits(size)
+            #val = in_bbuf.get_bits(size)
+            val = in_bbuf.get_bits_as_buffer(size)
+            print(val._content)
 
         return [val, size]
 
