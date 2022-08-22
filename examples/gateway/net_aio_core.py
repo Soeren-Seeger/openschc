@@ -129,7 +129,7 @@ class AiohttpUpperLayer:
         route_info = self.lookup_route(dst_l3_addr)
         if route_info is None:
             missing_ip = binascii.hexlify(dst_l3_addr).decode('ascii')
-            self.system.log(f"L3 route for {missing_ip} wasn't found.")
+            self.system.log("L3" ,f"route for {missing_ip} wasn't found.")
             return False
         # XXX need to check for asyncio
         self.protocol.schc_send(route_info["dst"], dst_l3_addr, packet)
