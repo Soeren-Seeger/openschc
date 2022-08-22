@@ -231,6 +231,9 @@ class SCHCProtocol:
         packet_bbuf = self._apply_compression(dst_l3_address, raw_packet)
 
         # Check if fragmentation is needed.
+        print("FRAG ???")
+        print(packet_bbuf.count_added_bits())
+        print(self.layer2.get_mtu_size())
         if packet_bbuf.count_added_bits() < self.layer2.get_mtu_size():
             self._log("fragmentation not needed size={}".format(
                 packet_bbuf.count_added_bits()))
