@@ -239,7 +239,8 @@ class SCHCProtocol:
             self._log("fragmentation not needed size={}".format(
                 packet_bbuf.count_added_bits()))
             args = (packet_bbuf.get_content(), dst_l2_address)
-            self.scheduler.add_event(0, self.layer2.send_packet, args)  # XXX: what about directly send?
+            #self.scheduler.add_event(0, self.layer2.send_packet, args)  # XXX: what about directly send?
+            self.layer2.send_packet(packet_bbuf.get_content(), dst_l2_address)
             return
 
         # Start a fragmentation session from rule database
