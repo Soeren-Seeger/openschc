@@ -713,7 +713,7 @@ class Decompressor:
             hex_ip = hex_ip[2:]
             bin_ip = binascii.unhexlify(hex_ip)
             print(bin_ip)
-
+            val = bin_ip
 
             #except:
              #   print("compressor-core:  !!! apply error on IP_DEV Address. see compr_core.py ln:715")
