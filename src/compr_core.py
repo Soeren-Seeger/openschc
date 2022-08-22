@@ -708,11 +708,10 @@ class Decompressor:
             try:
                 print("compressor-core:  SCHC IPV6 Device IID - Value send - apply correct format ")
                 val = in_bbuf.get_bits(size)
-                print(val)
-                val = binascii.hexlify(val)
-                print(val)
+                val = hex(val)
+
             except:
-                print("SCHIIIT")
+                print("compressor-core:  !!! apply error on IP_DEV Address. see compr_core.py ln:715")
         else:
             val = in_bbuf.get_bits(size)
 
