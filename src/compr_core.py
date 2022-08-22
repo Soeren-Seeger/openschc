@@ -2,6 +2,8 @@
 .. module:: compr_core
    :platform: Python, Micropython
 """
+import binascii
+
 from gen_base_import import *
 from gen_utils import dprint
 
@@ -689,15 +691,30 @@ class Decompressor:
             dprint("siZE = ", size)
             if size == 0:
                 return (None, 0)
+
         elif rule[T_FL] == "tkl":
             size = self.parsed_packet[(T_COAP_TKL, 1)][0]*8
             dprint("token size", size)
+
         elif type (rule[T_FL]) == int:
             size = rule[T_FL]
+
         else:
             raise ValueError("cannot read field length")
         #in_bbuf.display("bin")
-        val = in_bbuf.get_bits(size)
+
+
+        if (rule[T_FID]) == "IPV6.DEV_IID":
+            try:
+                print("compressor-core:  SCHC IPV6 Device IID - Value send - apply correct format ")
+                val = in_bbuf.get_bits(size)
+                print(val)
+                val = binascii.hexlify(val)
+                print(val)
+            except:
+                print("SCHIIIT")
+        else:
+            val = in_bbuf.get_bits(size)
 
         return [val, size]
 
