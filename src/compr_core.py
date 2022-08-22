@@ -709,6 +709,7 @@ class Decompressor:
             #try:
             print("compressor-core:  SCHC IPV6 Device IID - Value send - apply correct format ")
             int_ip = in_bbuf.get_bits(size)
+            print(int_ip)
             hex_ip = hex(int_ip)
             hex_ip = hex_ip[2:]
             bin_ip = binascii.unhexlify(hex_ip)
@@ -718,6 +719,7 @@ class Decompressor:
             #except:
              #   print("compressor-core:  !!! apply error on IP_DEV Address. see compr_core.py ln:715")
         else:
+            print("NOT")
             val = in_bbuf.get_bits(size)
 
 
