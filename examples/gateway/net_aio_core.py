@@ -182,7 +182,7 @@ class AiohttpLowerLayer():
                                         self._post_data,
                                         (self.config["downlink_url"],
                                         body, self.config["ssl_verify"]))'''
-        self._post_data(self.config["downlink_url"], body, self.config["ssl_verify"])
+        self._do_post_data(self.config["downlink_url"], body, self.config["ssl_verify"])
 
         status = 0
         #
