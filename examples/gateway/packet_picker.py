@@ -31,10 +31,17 @@ def cb_post(ts, pkt, cb_arg, raw_packet=False):
     if raw_packet is False:
         # skip the pcap header.
         packet = pkt[4:].hex()
+        print("1 Hex PKG:", packet)
     else:
         packet = pkt.hex()
+        print("2 Hex PKG:", packet)
     if "content-type" not in headers:
         headers["content-type"] = "application/x-rawip-hex"
+
+    print("URL:", url)
+    print("URL:", headers)
+    print("URL:", packet)
+    print("URL:", verify)
     requests.post(url, headers=headers, data=packet,
                   verify=verify)
 
