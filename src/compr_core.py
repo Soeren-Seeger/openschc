@@ -705,7 +705,7 @@ class Decompressor:
         #in_bbuf.display("bin")
 
 
-        if (rule[T_FID]) == "IPV6.DEV_IID":
+        '''if (rule[T_FID]) == "IPV6.DEV_IID":
             print("compressor-core:  SCHC IPV6 Device IID - Value send - apply correct format ")
             int_ip = in_bbuf.get_bits(size)
             print(int_ip)
@@ -715,8 +715,8 @@ class Decompressor:
             print(bin_ip)
             val = bin_ip
         else:
-            print("NOT V6 IID")
-            val = in_bbuf.get_bits(size)
+            print("NOT V6 IID")'''
+        val = in_bbuf.get_bits(size)
 
 
         return [val, size]
