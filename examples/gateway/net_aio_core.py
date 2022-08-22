@@ -201,7 +201,7 @@ class AiohttpLowerLayer():
         headers = {"content-type": "application/json"}
         rule = 2
         url = url + f"/in/{dst_l2_addr}"
-        payload = f'\"data\":\"{data}\", \"port\":{rule}, \"time\":\"immediately\"'
+        payload = f'\\"data\\":\\"{data}\\", \\"port\\":{rule}, \\"time\\":\\"immediately\\"'
 
         print("POST to LNS REST Api")
         print(f"URL: {url}")
