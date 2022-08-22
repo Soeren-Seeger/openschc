@@ -182,7 +182,7 @@ class AiohttpLowerLayer():
                                         self._post_data,
                                         (self.config["downlink_url"],
                                         body, self.config["ssl_verify"]))'''
-        self._do_post_data(self.config["downlink_url"], body, self.config["ssl_verify"])
+        self._post_data(self.config["downlink_url"], body, self.config["ssl_verify"])
 
         status = 0
         #
@@ -196,8 +196,8 @@ class AiohttpLowerLayer():
         return 250
 
     def _post_data(self, *args):
-        #t = asyncio.ensure_future(self._do_post_data(*args))
-        self._do_post_data(*args)
+        t = asyncio.ensure_future(self._do_post_data(*args))
+        #self._do_post_data(*args)
 
     async def _do_post_data(self, url, data, verify):
         headers = {"content-type": "application/json"}
