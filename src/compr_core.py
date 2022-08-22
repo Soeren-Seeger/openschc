@@ -708,13 +708,13 @@ class Decompressor:
         if (rule[T_FID]) == "IPV6.DEV_IID":
             #try:
             print("compressor-core:  SCHC IPV6 Device IID - Value send - apply correct format ")
-            print(in_bbuf.get_content())
-            '''print(int_ip)
+            int_ip = in_bbuf.get_bits(size)
+            print(int_ip)
             hex_ip = hex(int_ip)
             hex_ip = hex_ip[2:]
             bin_ip = binascii.unhexlify(hex_ip)
             print(bin_ip)
-            val = bin_ip'''
+            val = bin_ip
 
             #except:
              #   print("compressor-core:  !!! apply error on IP_DEV Address. see compr_core.py ln:715")
