@@ -234,7 +234,8 @@ class SCHCProtocol:
         print("FRAG ???")
         print(packet_bbuf.count_added_bits())
         print(self.layer2.get_mtu_size())
-        if packet_bbuf.count_added_bits() < self.layer2.get_mtu_size():
+        #if packet_bbuf.count_added_bits() < self.layer2.get_mtu_size():
+        if packet_bbuf.count_added_bits() < 170:
             self._log("fragmentation not needed size={}".format(
                 packet_bbuf.count_added_bits()))
             args = (packet_bbuf.get_content(), dst_l2_address)
