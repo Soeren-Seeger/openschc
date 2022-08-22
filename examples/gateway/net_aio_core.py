@@ -12,6 +12,7 @@ from compr_core import *
 from gen_base_import import *  # used for now for differing modules in py/upy
 from gen_utils import dprint
 
+
 # --------------------------------------------------
 
 class AiohttpUpperLayer:
@@ -25,14 +26,14 @@ class AiohttpUpperLayer:
         tricky. the IP address in the config is hex string.
         the IP address in bytes has been added by config_update().
         """
-        for l3a_raw,info in self.config["route"].items():
+        for l3a_raw, info in self.config["route"].items():
             if l3a_raw == dst_ipaddr:
                 return info
         else:
             return None
 
     def lookup_interface(self, ifname):
-        for config_ifname,info in self.config["interface"].items():
+        for config_ifname, info in self.config["interface"].items():
             if ifname == config_ifname:
                 return info
         else:
@@ -43,7 +44,7 @@ class AiohttpUpperLayer:
 
     async def async_pcap_send(self, data):
         self.system.scheduler.loop.run_in_executor(
-                None, self.pcap.sendpacket, data)
+            None, self.pcap.sendpacket, data)
 
     def recv_packet(self, dst_l2_addr, raw_packet, payload):
         print("####################FOLLOW: netAIO LAYER3 recv_packet############################")
@@ -90,7 +91,6 @@ class AiohttpUpperLayer:
         # udp_pkg.len = 30
         # udp_pkg.chksum = int(raw_packet[('UDP.CKSUM', 1)][1])
 
-
         coap_pkg = CoAP()
         coap_pkg.ver = int(raw_packet[(T_COAP_VERSION, 1)][0])
         coap_pkg.type = int(raw_packet[(T_COAP_TYPE, 1)][0])
@@ -101,12 +101,12 @@ class AiohttpUpperLayer:
         PATH = raw_packet[('COAP.Uri-Path', 1)][0]
         coap_pkg.options = [('Uri-Path', PATH)]
 
-        #datadata = b'\xff'
-        #datadata += bytes(data, 'ascii')
-        #payload = int(payload, base=16)
-        #payload = f'{payload:064x}'
+        # datadata = b'\xff'
+        # datadata += bytes(data, 'ascii')
+        # payload = int(payload, base=16)
+        # payload = f'{payload:064x}'
         print(payload)
-        payload = 'ff'+payload
+        payload = 'ff' + payload
         print(payload)
         pay_raw = b''
         try:
@@ -131,7 +131,7 @@ class AiohttpUpperLayer:
         route_info = self.lookup_route(dst_l3_addr)
         if route_info is None:
             missing_ip = binascii.hexlify(dst_l3_addr).decode('ascii')
-            self.system.log("L3" ,f"route for {missing_ip} wasn't found.")
+            self.system.log("L3", f"route for {missing_ip} wasn't found.")
             return False
         # XXX need to check for asyncio
         self.protocol.schc_send(route_info["dst"], dst_l3_addr, packet)
@@ -153,7 +153,8 @@ class AiohttpLowerLayer():
     async def recv_packet(self, data_hex, dst_l2_addr=None):
         """Processing a packet from the southbound to the SCHC layer"""
         # XXX need to check for asyncio
-        print("#####################################################FOLLOW: netAIO recv_packet############################################")
+        print(
+            "#####################################################FOLLOW: netAIO recv_packet############################################")
         self.protocol.schc_recv(dst_l2_addr, data_hex)
 
     def send_packet(self, data, dst_l2_addr=None, callback=None,
@@ -163,14 +164,10 @@ class AiohttpLowerLayer():
         dprint("L2: sending a pac"
                "ket", data.hex())
         self.system.log("L2", "send packet to devaddr={} packet={}".format(
-                dst_l2_addr, data.hex()))
+            dst_l2_addr, data.hex()))
         body = json.dumps({"hexSCHCData": data.hex(),
-                            "devL2Addr": dst_l2_addr})
-        """
-        self.system.scheduler.loop.run_in_executor(
-                None, self._post_data, self.config["downlink_url"], body,
-                self.config["ssl_verify"])
-        """
+                           "devL2Addr": dst_l2_addr})
+
         current_clock = self.system.scheduler.get_clock()
         diff = current_clock - self.last_clock
         if diff > self.config["tx_interval"]:
@@ -182,7 +179,8 @@ class AiohttpLowerLayer():
                                         self._post_data,
                                         (self.config["downlink_url"],
                                         body, self.config["ssl_verify"]))'''
-        self._post_data(self.config["downlink_url"], body, self.config["ssl_verify"])
+
+        self._post_data(self.config["downlink_url"], dst_l2_addr, data.hex(), self.config["ssl_verify"])
 
         status = 0
         #
@@ -197,36 +195,32 @@ class AiohttpLowerLayer():
 
     def _post_data(self, *args):
         t = asyncio.ensure_future(self._do_post_data(*args))
-        #self._do_post_data(*args)
+        # self._do_post_data(*args)
 
-    async def _do_post_data(self, url, data, verify):
+    async def _do_post_data(self, url,dst_l2_addr, data, verify):
         headers = {"content-type": "application/json"}
-        #values = json.load(data)
+        rule = 2
+        url = url + f"/in/{dst_l2_addr}"
+        payload = f'\"data\":\"{data}\", \"port\":{rule}, \"time\":\"immediately\"'
 
-        #l2 = values["devL2Addr"]
-        #url = url + f"/in/{l2}"
-        url = url + f"/in/AA11"
+        print("POST to LNS REST Api")
+        print(f"URL: {url}")
+        print(f"data: {payload}")
 
-        #data = values["hexSCHCData"]
-
-        print(url)
-        print(type(data))
         async with aiohttp.ClientSession() as session:
-            #await session.post(url+"/in/{}", json=data, ssl=verify)
-
+            # await session.post(url+"/in/{}", json=data, ssl=verify)
             await session.post(
                 url,
-                data=data,
+                data=payload,
                 headers=headers,
                 auth=aiohttp.BasicAuth("down", "down"),
                 verify_ssl=False
             )
 
 
-
 # --------------------------------------------------
 
-#class Scheduler(SimulScheduler):
+# class Scheduler(SimulScheduler):
 # net_aio_sched.py
 class AiohttpScheduler():
 
@@ -234,16 +228,16 @@ class AiohttpScheduler():
         self.loop = loop
         print("########################1#")
         dprint("#######################2#")
-     
-        #super().__init__()
+
+        # super().__init__()
 
     def get_clock(self):
         return self.loop.time()
 
     def add_event(self, time_in_sec, event_function, event_args):
         print(f"Add event: "
-               f"call in {time_in_sec} sec: "
-               f"{event_function.__name__} {event_args}")
+              f"call in {time_in_sec} sec: "
+              f"{event_function.__name__} {event_args}")
         assert time_in_sec >= 0
         if event_args is None:
             evnet_id = self.loop.call_later(time_in_sec, event_function)
@@ -255,13 +249,15 @@ class AiohttpScheduler():
     def cancel_event(self, event_handle):
         event_handle.cancel()
 
-# --------------------------------------------------        
+
+# --------------------------------------------------
 
 class AiohttpSystem:
     """
     self.get_scheduler(): provide the handler of the scheduler.
     self.log(): show the messages.  It is called by all modules.
     """
+
     def __init__(self, logger=None, config=None):
         loop = asyncio.get_event_loop()
         if config["debug_level"] > 1:
@@ -279,4 +275,3 @@ class AiohttpSystem:
     def log(self, name, message):
         # XXX should set a logging level.
         self.logger.debug(f"{name} {message}")
-
