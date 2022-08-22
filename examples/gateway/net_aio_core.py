@@ -178,10 +178,12 @@ class AiohttpLowerLayer():
         else:
             delay = self.config["tx_interval"] - diff
         self.last_clock = current_clock
-        self.system.scheduler.add_event(delay,
+        '''self.system.scheduler.add_event(delay,
                                         self._post_data,
                                         (self.config["downlink_url"],
-                                        body, self.config["ssl_verify"]))
+                                        body, self.config["ssl_verify"]))'''
+        self._post_data(self.config["downlink_url"], body, self.config["ssl_verify"])
+
         status = 0
         #
         if callback is not None:
