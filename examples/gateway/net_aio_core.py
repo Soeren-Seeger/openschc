@@ -125,6 +125,7 @@ class AiohttpUpperLayer:
 
     async def send_packet(self, packet):
         dst_l3_addr = packet[24:40]
+        print("Recognized DST Address:", binascii.heylify(dst_l3_addr))
         route_info = self.lookup_route(dst_l3_addr)
         if route_info is None:
             self.system.log(f"L3 route for {dst_l3_addr} wasn't found.")
