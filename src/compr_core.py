@@ -705,20 +705,20 @@ class Decompressor:
         #in_bbuf.display("bin")
 
 
-        '''if (rule[T_FID]) == "IPV6.DEV_IID":
+        if (rule[T_FID]) == "IPV6.DEV_IID":
             #try:
             print("compressor-core:  SCHC IPV6 Device IID - Value send - apply correct format ")
-            int_ip = in_bbuf.get_bits(size)
-            print(int_ip)
+            print(in_bbuf.get_content())
+            '''print(int_ip)
             hex_ip = hex(int_ip)
             hex_ip = hex_ip[2:]
             bin_ip = binascii.unhexlify(hex_ip)
             print(bin_ip)
-            val = bin_ip
+            val = bin_ip'''
 
             #except:
              #   print("compressor-core:  !!! apply error on IP_DEV Address. see compr_core.py ln:715")
-        else:'''
+        #else:'''
         print("NOT")
         val = in_bbuf.get_bits(size)
 
