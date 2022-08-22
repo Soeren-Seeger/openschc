@@ -709,7 +709,7 @@ class Decompressor:
             #try:
             print("compressor-core:  SCHC IPV6 Device IID - Value send - apply correct format ")
             val = in_bbuf.get_bits(size)
-            ip = netaddr.IPAddress(val)
+            ip = str(netaddr.IPAddress(val))
             print(ip)
             bin_ip = binascii.unhexlify(ip)
             print(bin_ip)
