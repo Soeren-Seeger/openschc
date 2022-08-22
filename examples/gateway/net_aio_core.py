@@ -128,7 +128,7 @@ class AiohttpUpperLayer:
         print("Recognized DST Address:", binascii.hexlify(dst_l3_addr))
         route_info = self.lookup_route(dst_l3_addr)
         if route_info is None:
-            self.system.log(f"L3 route for {dst_l3_addr} wasn't found.")
+            self.system.log(f"L3 route for {binascii.hexlify(dst_l3_addr)} wasn't found.")
             return False
         # XXX need to check for asyncio
         self.protocol.schc_send(route_info["dst"], dst_l3_addr, packet)
