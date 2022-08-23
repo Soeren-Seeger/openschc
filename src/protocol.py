@@ -188,12 +188,12 @@ class SCHCProtocol:
             self._log("compression result no-compression")
             return BitBuffer(raw_packet)
 
-        schc_packet = self.compressor.compress(rule, parsed_packet, residue, t_dir)
+        schc_packet, rule_port = self.compressor.compress(rule, parsed_packet, residue, t_dir)
         dprint(schc_packet)
         schc_packet.display("bin")
         self._log("compression result {}".format(schc_packet))
 
-        return schc_packet
+        return schc_packet, rule_port
 
     def _make_frag_session(self, dst_l2_address, direction):
         """Search a fragmentation rule, create a session for it, return None if not found"""
@@ -228,19 +228,17 @@ class SCHCProtocol:
         self._log("recv-from-l3 {} {} {}".format(dst_l2_address, dst_l3_address, raw_packet))
 
         # Perform compression
-        packet_bbuf = self._apply_compression(dst_l3_address, raw_packet)
+        packet_bbuf, rule_port = self._apply_compression(dst_l3_address, raw_packet)
 
         # Check if fragmentation is needed.
         print("FRAG ???")
         print(packet_bbuf.count_added_bits())
         print(self.layer2.get_mtu_size())
-        #if packet_bbuf.count_added_bits() < self.layer2.get_mtu_size():
-        if packet_bbuf.count_added_bits() < 170:
+        if packet_bbuf.count_added_bits() < self.layer2.get_mtu_size():
             self._log("fragmentation not needed size={}".format(
                 packet_bbuf.count_added_bits()))
-            args = (packet_bbuf.get_content(), dst_l2_address)
             #self.scheduler.add_event(0, self.layer2.send_packet, args)  # XXX: what about directly send?
-            self.layer2.send_packet(packet_bbuf.get_content(), dst_l2_address)
+            self.layer2.send_packet(packet_bbuf.get_content(), rule_port, dst_l2_address)
             return
 
         # Start a fragmentation session from rule database
@@ -250,6 +248,9 @@ class SCHCProtocol:
             direction = T_DIR_DW
         frag_session = self._make_frag_session(dst_l2_address, direction)
         if frag_session is not None:
+            ###Re-applying Rule ID to Buffer for fragmentation
+            print("Re-applying Rule-ID to the Buffer for fragmentation (protocol.py - l 252)")
+            packet_bbuf.add_bytes(rule_port, 0)
             frag_session.set_packet(packet_bbuf)
             frag_session.start_sending()
 

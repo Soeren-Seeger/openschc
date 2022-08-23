@@ -153,18 +153,15 @@ class AiohttpLowerLayer():
     async def recv_packet(self, data_hex, dst_l2_addr=None):
         """Processing a packet from the southbound to the SCHC layer"""
         # XXX need to check for asyncio
-        print(
-            "#####################################################FOLLOW: netAIO recv_packet############################################")
         self.protocol.schc_recv(dst_l2_addr, data_hex)
 
-    def send_packet(self, data, dst_l2_addr=None, callback=None,
+    def send_packet(self, data, rule_port, dst_l2_addr=None, callback=None,
                     callback_args=tuple()):
-        print("------------------------WRONG---------------------------")
         """Processing a packet from the SCHC layer to southbound"""
         dprint("L2: sending a pac"
                "ket", data.hex())
-        self.system.log("L2", "send packet to devaddr={} packet={}".format(
-            dst_l2_addr, data.hex()))
+        self.system.log("L2", "send packet to devaddr={} on Port/Rule {} packet={}".format(
+            dst_l2_addr, rule_port, data.hex()))
         body = json.dumps({"hexSCHCData": data.hex(),
                            "devL2Addr": dst_l2_addr})
 
@@ -180,7 +177,7 @@ class AiohttpLowerLayer():
                                         (self.config["downlink_url"],
                                         body, self.config["ssl_verify"]))'''
 
-        self._post_data(self.config["downlink_url"], dst_l2_addr, data.hex(), self.config["ssl_verify"])
+        self._post_data(self.config["downlink_url"], dst_l2_addr, rule_port, data.hex(), self.config["ssl_verify"])
 
         status = 0
         #
@@ -197,11 +194,11 @@ class AiohttpLowerLayer():
         t = asyncio.ensure_future(self._do_post_data(*args))
         # self._do_post_data(*args)
 
-    async def _do_post_data(self, url,dst_l2_addr, data, verify):
+    async def _do_post_data(self, url,dst_l2_addr, rule_port, data, verify):
+
         headers = {"content-type": "application/json"}
-        rule = 2
         url = url + f"/in/{dst_l2_addr}"
-        payload = f'\"data\":\"{data}\", \"port\":{rule}, \"time\":\"immediately\"'
+        payload = f'\"data\":\"{data}\", \"port\":{rule_port}, \"time\":\"immediately\"'
         payload = "{" + payload + "}"
         print("POST to LNS REST Api")
         print(f"URL: {url}")

@@ -569,8 +569,11 @@ class Compressor:
         output_bbuf = BitBuffer()
         # set ruleID first.
         if rule[T_RULEID] is not None and rule[T_RULEIDLENGTH] is not None:
-            output_bbuf.add_bits(rule[T_RULEID], rule[T_RULEIDLENGTH])
+            #deprec: Rule now seperated to be send as fport
+            #output_bbuf.add_bits(rule[T_RULEID], rule[T_RULEIDLENGTH])
+            rule_port = rule[T_RULEID]
             dprint("rule {}/{}".format(rule[T_RULEID], rule[T_RULEIDLENGTH]))
+
             #output_bbuf.display(format="bin")
 
         for r in rule["Compression"]:
@@ -592,7 +595,7 @@ class Compressor:
 
         output_bbuf.add_bytes(data)
 
-        return output_bbuf
+        return output_bbuf, rule_port
 
     def no_compress(self, rule, data):
         """
