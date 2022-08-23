@@ -128,6 +128,8 @@ class AiohttpUpperLayer:
     async def send_packet(self, packet):
         dst_l3_addr = packet[24:40]
         print("Recognized DST Address:", binascii.hexlify(dst_l3_addr))
+        print("DEBUGGG:")
+        print(packet)
         route_info = self.lookup_route(dst_l3_addr)
         if route_info is None:
             missing_ip = binascii.hexlify(dst_l3_addr).decode('ascii')
