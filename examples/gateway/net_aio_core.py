@@ -209,13 +209,14 @@ class AiohttpLowerLayer():
 
         async with aiohttp.ClientSession() as session:
             # await session.post(url+"/in/{}", json=data, ssl=verify)
-            await session.post(
+            se = await session.post(
                 url,
                 data=payload,
                 headers=headers,
                 auth=aiohttp.BasicAuth("down", "down"),
                 verify_ssl=False
             )
+            print(se)
 
 
 # --------------------------------------------------
