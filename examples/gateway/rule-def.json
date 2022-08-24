@@ -1,0 +1,85 @@
+{
+    "DeviceID" : "DEF00001",
+    "SoR" : [
+	 {
+    "RuleID": 6,
+    "RuleIDLength": 4,
+    "Compression": [
+      {"FID": "IPV6.VER", "TV": 6, "MO": "equal", "CDA": "not-sent"},
+      {"FID": "IPV6.TC",  "TV": 0, "MO": "equal", "CDA": "not-sent"},
+      {"FID": "IPV6.FL",  "TV": 0, "MO": "ignore","CDA": "not-sent"},
+      {"FID": "IPV6.LEN",          "MO": "ignore","CDA": "compute-length"},
+      {"FID": "IPV6.NXT", "TV": 58, "MO": "equal", "CDA": "not-sent"},
+      {"FID": "IPV6.HOP_LMT", "TV" : 121,"MO": "ignore","CDA": "not-sent"},
+      {"FID": "IPV6.DEV_PREFIX","TV": "2001:8d8:1801:84dd::","MO": "equal","CDA": "not-sent"},
+      {"FID": "IPV6.DEV_IID"   ,"TV": "::1"  ,"MO": "ignore","CDA": "value-sent"},
+      {"FID": "IPV6.APP_PREFIX","TV": "fe80::", "MO": "ignore","CDA": "value-sent"},
+      {"FID": "IPV6.APP_IID", "TV": "::1",      "MO": "ignore","CDA": "value-sent"},
+      {"FID": "ICMPV6.TYPE",  "TV": 128,"MO": "equal","CDA": "not-sent"},
+      {"FID": "ICMPV6.CODE",  "TV": 0,  "MO": "equal","CDA": "not-sent"},
+      {"FID": "ICMPV6.CKSUM", "TV": 0, "MO": "ignore","CDA": "compute-checksum"},
+      {"FID": "ICMPV6.IDENT", "TV": 0,"MO": "ignore","CDA": "value-sent"},
+      {"FID": "ICMPV6.SEQNO", "TV": 0,"MO": "ignore","CDA": "value-sent"}
+    ]
+    },
+    {
+    "RuleID": 7,
+    "RuleIDLength": 4,
+    "Compression": [
+      {"FID": "IPV6.VER", "TV": 6, "MO": "equal", "CDA": "not-sent"},
+      {"FID": "IPV6.TC",  "TV": 0, "MO": "equal", "CDA": "not-sent"},
+      {"FID": "IPV6.FL",  "TV": 0, "MO": "ignore","CDA": "not-sent"},
+      {"FID": "IPV6.LEN",          "MO": "ignore","CDA": "compute-length"},
+      {"FID": "IPV6.NXT", "TV": 58, "MO": "equal", "CDA": "not-sent"},
+      {"FID": "IPV6.HOP_LMT", "TV" : 121,"MO": "ignore","CDA": "not-sent"},
+      {"FID": "IPV6.DEV_PREFIX","TV": "2001:8d8:1801:84dd::","MO": "equal","CDA": "not-sent"},
+      {"FID": "IPV6.DEV_IID"   ,"TV": "::1"  ,"MO": "ignore","CDA": "value-sent"},
+      {"FID": "IPV6.APP_PREFIX","TV": "fe80::", "MO": "ignore","CDA": "value-sent"},
+      {"FID": "IPV6.APP_IID", "TV": "::1",      "MO": "ignore","CDA": "value-sent"},
+      {"FID": "ICMPV6.TYPE",  "TV": 129,"MO": "equal","CDA": "not-sent"},
+      {"FID": "ICMPV6.CODE",  "TV": 0,  "MO": "equal","CDA": "not-sent"},
+      {"FID": "ICMPV6.CKSUM", "TV": 0, "MO": "ignore","CDA": "compute-checksum"},
+      {"FID": "ICMPV6.IDENT", "TV": 0,"MO": "ignore","CDA": "value-sent"},
+      {"FID": "ICMPV6.SEQNO", "TV": 0,"MO": "ignore","CDA": "value-sent"}
+    ]
+    },
+    {
+       "RuleID" : 20,
+       "RuleIDLength" : 8,
+       "Fragmentation" : {
+           "FRMode": "AckOnError",
+           "FRDirection": "UP",
+           "FRModeProfile": {
+               "dtagSize": 0,
+               "WSize": 2,
+               "FCNSize": 6,
+               "ackBehavior": "afterAll1",
+               "tileSize": 10,
+               "MICAlgorithm": "crc32",
+               "MICWordSize": 8,
+               "L2WordSize": 8,
+               "lastTileInAll1": false
+           }
+    }
+    },
+      {
+       "RuleID" : 30,
+       "RuleIDLength" : 8,
+       "Fragmentation" : {
+       "FRMode": "AckAlways",
+       "FRDirection": "DW",
+       "FRModeProfile": {
+           "dtagSize": 0,
+           "WSize": 2,
+           "FCNSize": 6,
+           "ackBehavior": "afterAll1",
+           "tileSize": 10,
+           "MICAlgorithm": "crc32",
+           "MICWordSize": 8,
+           "L2WordSize": 8,
+           "lastTileInAll1": false
+       }
+       }
+   }
+]
+}

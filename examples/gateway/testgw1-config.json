@@ -6,9 +6,8 @@
     "ssl_verify": false,
     "my_cert": "testgw1-cert.pem",
     "rule_config": [
-        { "rule_file": "rule-lora.json" },
-        { "rule_file": "rule-a234.json", "devL2Addr": "AAA00001" },
-        { "rule_file": "rule-b234.json", "devL2Addr": "B2345678" }
+        { "rule_file": "rule-abc.json", "devL2Addr": "ABC00001" },
+        { "rule_file": "rule-def.json", "devL2Addr": "DEF00001" }
     ],
     "route": {
         "2a05:d014:faa:5500:6ff9:8389:cf03:f3c1": { "ifname": "ens192", "dst": "00:50:56:28:7d:a3" },
