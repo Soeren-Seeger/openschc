@@ -12,7 +12,7 @@ class WanRouter:
     def __init__(self, uri):
         f = open(uri)
         self.data = json.load(f)
-        atexit.register(self.cleanup())
+        atexit.register(self.cleanup)
 
 
     def start(self, interface, url):
@@ -29,7 +29,6 @@ class WanRouter:
     def stop(self):
         sys.exit()
 
-    @staticmethod
     def cleanup(self):
         for p in self.routing_processes:
             p.kill()
