@@ -4,7 +4,7 @@ from subprocess import Popen
 import atexit
 
 
-data = {}
+global data
 end_devices = []
 routing_processes = []
 
