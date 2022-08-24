@@ -707,9 +707,9 @@ class Decompressor:
             raise ValueError("cannot read field length")
         #in_bbuf.display("bin")
 
-
-        if (rule[T_FID]) == "IPV6.DEV_IID":
-            print("compressor-core:  SCHC IPV6 Device IID - Value send - apply correct format ")
+        val = (rule[T_FID])
+        if val == "IPV6.DEV_IID" or val == "IPV6.APP_IID" or val == "IPV6.DEV_PREFIX" or val == "IPV6.APP_PREFIX" :
+            print(f"compressor-core:  SCHC IPV6 IP [{val}] - Value send - apply correct format ")
             int_ip = in_bbuf.get_bits(size)
             print(int_ip)
             hex_ip = hex(int_ip)
