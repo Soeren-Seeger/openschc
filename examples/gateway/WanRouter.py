@@ -29,6 +29,7 @@ class WanRouter:
     def stop(self):
         sys.exit()
 
+    @staticmethod
     def cleanup(self):
         for p in self.routing_processes:
             p.kill()
