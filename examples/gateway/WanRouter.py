@@ -15,7 +15,7 @@ def start(interface, url):
             end_devices.append(adr)
 
     for device in end_devices:
-        dst = "\'dst ", device, "\'"
+        dst = "\'dst " +  device + "\'"
         print(dst)
         process = Popen(["./packet_picker.py", "-i", interface, url, '--untrust', '-d', '-F', dst],
                         shell=False)
