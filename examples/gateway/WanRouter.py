@@ -3,7 +3,7 @@ import json
 from subprocess import Popen
 import atexit
 
-f = open('conf.json')
+f = open('testgw1-config.json')
 data = json.load(f)
 
 end_devices = []
@@ -15,7 +15,9 @@ def start(interface, url):
             end_devices.append(adr)
 
     for device in end_devices:
-        process = Popen(["packet_picker.py", "-i", interface, url, '--untrust', '-d', '-F', "\'dst", device, "\'"],
+        dst = "\'dst ", device, "\'"
+        print(dst)
+        process = Popen(["./packet_picker.py", "-i", interface, url, '--untrust', '-d', '-F', dst],
                         shell=False)
         routing_processes.append(process)
 
