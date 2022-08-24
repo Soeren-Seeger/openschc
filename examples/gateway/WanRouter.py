@@ -10,7 +10,7 @@ end_devices = []
 routing_processes = []
 
 def start(interface, url):
-    for adr, conf in data['route'].items():
+    '''for adr, conf in data['route'].items():
         if conf['ifname'] == 'lpwan':
             end_devices.append(adr)
 
@@ -19,7 +19,11 @@ def start(interface, url):
         print(dst)
         process = Popen(["./packet_picker.py", "-i", interface, url, '--untrust', '-d', '-F', dst],
                         shell=False)
-        routing_processes.append(process)
+        routing_processes.append(process)'''
+    process = Popen(['./packet_picker.py', '-i', 'ens192', 'https://localhost:51225/dl', '--untrust', '-d', '-F', 'dst 2001:8d8:1801:84dd:d011:1cc1:c483:adc9'],
+                    shell=False)
+
+
 
 def stop():
     sys.exit()
