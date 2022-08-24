@@ -1,4 +1,9 @@
-import WanRouter
+from WanRouter import WanRouter
+import time
 
-WanRouter.init('testgw1-config.json')
-WanRouter.start('ens192', 'https://localhost:51225/dl')
+wr = WanRouter('testgw1-config.json')
+
+
+wr.start('ens192', 'https://localhost:51225/dl')
+time.sleep(10)
+wr.stop()

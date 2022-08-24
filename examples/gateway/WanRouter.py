@@ -4,35 +4,35 @@ from subprocess import Popen
 import atexit
 
 
-global data
-end_devices = []
-routing_processes = []
+class WanRouter:
+    data = {}
+    end_devices = []
+    routing_processes = []
 
-def init(uri):
-    f = open(uri)
-    data = json.load(f)
-
-def start(interface, url):
-    for adr, conf in data['route'].items():
-        if conf['ifname'] == 'lpwan':
-            end_devices.append(adr)
-
-    for device in end_devices:
-        dst = 'dst ' + device
-        process = Popen(['./packet_picker.py', '-i', interface, url, '--untrust', '-d', '-F', dst],
-                        shell=False)
-        routing_processes.append(process)
+    def __init__(self, uri):
+        f = open(uri)
+        self.data = json.load(f)
+        atexit.register(self.cleanup())
 
 
+    def start(self, interface, url):
+        for adr, conf in self.data['route'].items():
+            if conf['ifname'] == 'lpwan':
+                self.end_devices.append(adr)
+
+        for device in self.end_devices:
+            dst = 'dst ' + device
+            process = Popen(['./packet_picker.py', '-i', interface, url, '--untrust', '-d', '-F', dst],
+                            shell=False)
+            self.routing_processes.append(process)
+
+    def stop(self):
+        sys.exit()
+
+    def cleanup(self):
+        for p in self.routing_processes:
+            p.kill()
+        print("IMPORTANT: All listeners stopped!")
 
 
 
-def stop():
-    sys.exit()
-
-def cleanup():
-    for p in routing_processes:
-        p.kill()
-    print("IMPORTANT: All listeners stopped!")
-
-atexit.register(cleanup)
