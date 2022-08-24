@@ -2,7 +2,7 @@
     "enable_sim_lpwa": true,
     "bind_addr": "localhost",
     "bind_port": 51225,
-    "downlink_url": "https://[]::1:51226/dl",
+    "downlink_url": "http://localhost:8080",
     "ssl_verify": false,
     "my_cert": "testgw1-cert.pem",
     "rule_config": [
