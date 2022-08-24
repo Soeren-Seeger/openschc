@@ -6,7 +6,7 @@ import aiohttp
 from scapy.all import *
 from scapy.contrib.coap import CoAP
 from scapy.layers.inet import UDP
-from scapy.layers.inet6 import IPv6
+from scapy.layers.inet6 import IPv6, ICMPv6EchoReply
 import binascii
 from compr_core import *
 from gen_base_import import *  # used for now for differing modules in py/upy
@@ -47,6 +47,7 @@ class AiohttpUpperLayer:
             None, self.pcap.sendpacket, data)
 
     def recv_packet(self, dst_l2_addr, raw_packet, payload):
+        global pkg
         print("####################FOLLOW: netAIO LAYER3 recv_packet############################")
         """Processing a packet from the SCHC layer to northbound."""
 
@@ -84,45 +85,62 @@ class AiohttpUpperLayer:
         ipv6_pkg.src = ':'.join(ipv6_src[i:i + 4] for i in range(0, len(ipv6_src), 4))
         ipv6_pkg.dst = ':'.join(ipv6_dst[i:i + 4] for i in range(0, len(ipv6_dst), 4))
 
-        udp_pkg = UDP()
-        udp_pkg.sport = raw_packet[('UDP.DEV_PORT', 1)][0]
-        udp_pkg.dport = raw_packet[('UDP.APP_PORT', 1)][0]
-        # udp_pkg.len = int(raw_packet[('UDP.LEN', 1)][1])
-        # udp_pkg.len = 30
-        # udp_pkg.chksum = int(raw_packet[('UDP.CKSUM', 1)][1])
+        if ipv6_pkg.nh == 17:
+            print("UDP Mode")
+            udp_pkg = UDP()
+            udp_pkg.sport = raw_packet[('UDP.DEV_PORT', 1)][0]
+            udp_pkg.dport = raw_packet[('UDP.APP_PORT', 1)][0]
+            # udp_pkg.len = int(raw_packet[('UDP.LEN', 1)][1])
+            # udp_pkg.len = 30
+            # udp_pkg.chksum = int(raw_packet[('UDP.CKSUM', 1)][1])
 
-        coap_pkg = CoAP()
-        coap_pkg.ver = int(raw_packet[(T_COAP_VERSION, 1)][0])
-        coap_pkg.type = int(raw_packet[(T_COAP_TYPE, 1)][0])
-        coap_pkg.tkl = int(raw_packet[(T_COAP_TKL, 1)][0])
-        coap_pkg.code = int(raw_packet[(T_COAP_CODE, 1)][0])
-        coap_pkg.msg_id = int(raw_packet[(T_COAP_MID, 1)][0])
-        coap_pkg.token = b'0'
-        PATH = raw_packet[('COAP.Uri-Path', 1)][0]
-        coap_pkg.options = [('Uri-Path', PATH)]
+            coap_pkg = CoAP()
+            coap_pkg.ver = int(raw_packet[(T_COAP_VERSION, 1)][0])
+            coap_pkg.type = int(raw_packet[(T_COAP_TYPE, 1)][0])
+            coap_pkg.tkl = int(raw_packet[(T_COAP_TKL, 1)][0])
+            coap_pkg.code = int(raw_packet[(T_COAP_CODE, 1)][0])
+            coap_pkg.msg_id = int(raw_packet[(T_COAP_MID, 1)][0])
+            coap_pkg.token = b'0'
+            PATH = raw_packet[('COAP.Uri-Path', 1)][0]
+            coap_pkg.options = [('Uri-Path', PATH)]
 
-        # datadata = b'\xff'
-        # datadata += bytes(data, 'ascii')
-        # payload = int(payload, base=16)
-        # payload = f'{payload:064x}'
-        print(payload)
-        payload = 'ff' + payload
-        print(payload)
-        pay_raw = b''
-        try:
-            pay_raw = bytes.fromhex(payload)
-        except ValueError:
-            print("Odd payload - remove foreign padding zero")
-            payload = payload[:-1]
-            print('corrected payload', str(payload))
-            pay_raw = bytes.fromhex(payload)
+            # datadata = b'\xff'
+            # datadata += bytes(data, 'ascii')
+            # payload = int(payload, base=16)
+            # payload = f'{payload:064x}'
+            print(payload)
+            payload = 'ff' + payload
+            print(payload)
+            pay_raw = b''
+            try:
+                pay_raw = bytes.fromhex(payload)
+            except ValueError:
+                print("Odd payload - remove foreign padding zero")
+                payload = payload[:-1]
+                print('corrected payload', str(payload))
+                pay_raw = bytes.fromhex(payload)
 
-        print("pay_raw:")
-        print(pay_raw)
-        # pkg = ipv6_pkg / udp_pkg / Raw(load=data)
-        pkg = ipv6_pkg / udp_pkg / coap_pkg / Raw(load=pay_raw)
+            print("pay_raw:")
+            print(pay_raw)
+            # pkg = ipv6_pkg / udp_pkg / Raw(load=data)
+            pkg = ipv6_pkg / udp_pkg / coap_pkg / Raw(load=pay_raw)
+
+        elif ipv6_pkg.nh == 58:
+            print("ICMP Mode")
+            icmp_pkg = ICMPv6EchoReply()
+            icmp_pkg.type = raw_packet[(T_ICMPV6_TYPE, 1)][0]
+            icmp_pkg.code = raw_packet[(T_ICMPV6_CODE, 1)][0]
+            #icmp_pkg.cksum = raw_packet[(T_ICMPV6_CKSUM, 1)][0]
+            icmp_pkg.id = raw_packet[(T_ICMPV6_IDENT, 1)][0]
+            icmp_pkg.seq = raw_packet[(T_ICMPV6_SEQNO, 1)][0]
+            if payload != None:
+                print("assume ICMP Payload:")
+                print(payload)
+                icmp_pkg.data = payload
+            pkg = ipv6_pkg / icmp_pkg
+        else:
+            print("ERROR: no scapy implementation for this protocol")
         pkg.show2()
-
         send(pkg, iface="ens192")
 
     async def send_packet(self, packet):
@@ -152,10 +170,10 @@ class AiohttpLowerLayer():
     def _set_protocol(self, protocol):
         self.protocol = protocol
 
-    async def recv_packet(self, data_hex, dst_l2_addr=None):
+    async def recv_packet(self, data_hex, rule_port, dst_l2_addr=None):
         """Processing a packet from the southbound to the SCHC layer"""
         # XXX need to check for asyncio
-        self.protocol.schc_recv(dst_l2_addr, data_hex)
+        self.protocol.schc_recv(dst_l2_addr, data_hex, rule_port)
 
     def send_packet(self, data, rule_port, dst_l2_addr=None, callback=None,
                     callback_args=tuple()):

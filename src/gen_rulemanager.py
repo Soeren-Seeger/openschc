@@ -1127,6 +1127,20 @@ class RuleManager:
         return None
 
 
+    def FindRuleFromID (self, id, device=None):
+
+        for d in self._ctxt:
+            dprint(d["DeviceID"])
+            if d["DeviceID"] == device: #look for a specific device
+                for r in d["SoR"]:
+                    ruleID = r[T_RULEID]
+                    tested_rule = id
+                    dprint(tested_rule, ruleID)
+                    if tested_rule == ruleID:
+                        dprint("successfully found rule by ID/port: ", id)
+                        return r
+        return None
+
     def FindRuleFromPacket(self, pkt, direction=T_DIR_BI, failed_field=False):
         """ Takes a parsed packet and returns the matching rule.
         """

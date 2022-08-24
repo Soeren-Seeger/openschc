@@ -254,18 +254,18 @@ class SCHCProtocol:
             frag_session.set_packet(packet_bbuf)
             frag_session.start_sending()
 
-    def schc_recv(self, dst_l2_addr, raw_packet):
+    def schc_recv(self, dst_l2_addr, raw_packet, rule_port):
         """Receiving a SCHC packet from a lower layer."""
         print(raw_packet) #############################################################################DELETE
         packet_bbuf = BitBuffer(raw_packet)
-        dprint('SCHC: recv from L2:', b2hex(packet_bbuf.get_content()))
+        dprint('SCHC: recv from L2:', b2hex(packet_bbuf.get_content()), "on Port: ", rule_port)
         frag_rule = self.rule_manager.FindFragmentationRule(
             deviceID=dst_l2_addr, packet=packet_bbuf)
 
         dtrace('\t\t\t-----------{:3}--------->|'.format(len(packet_bbuf._content)))
         if frag_rule is None:
             print("SKIP Fragmentation - no Frag MODE")
-            self.process_decompress(packet_bbuf, dst_l2_addr, "UP")
+            self.process_decompress(packet_bbuf, dst_l2_addr, rule_port, "UP")
         else:
             dtag_length = frag_rule[T_FRAG][T_FRAG_PROF][T_FRAG_DTAG]
             if dtag_length > 0:
@@ -290,10 +290,12 @@ class SCHCProtocol:
 
             session.receive_frag(packet_bbuf, dtag)
 
-    def process_decompress(self, packet_bbuf, dev_l2_addr, direction):
+    def process_decompress(self, packet_bbuf, dev_l2_addr, rule_port, direction):
         print("BUFFFFFFFFFFFFFFER111111:")
         print(packet_bbuf._rpos)
-        rule = self.rule_manager.FindRuleFromSCHCpacket(packet_bbuf, dev_l2_addr)
+        ###
+        #rule = self.rule_manager.FindRuleFromSCHCpacket(packet_bbuf, dev_l2_addr)
+        rule = self.rule_manager.FindRuleFromID(rule_port, dev_l2_addr)
         print(rule)
         if rule is None:
             # reject it.

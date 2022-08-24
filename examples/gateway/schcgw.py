@@ -97,10 +97,15 @@ async def app_uplink(request):
                     logger.debug("no SCHC data found.")
                     return web.json_response({"Status": "Error"}, status=400)
                 else:
-                    # successful to take a packet from the request.
-                    await protocol.layer2.recv_packet(
-                            bytearray.fromhex(data_hex), src_l2_addr)
-                    return web.json_response({"Status": "OK"}, status=202)
+                    rule_port = body.get("rulePort")
+                    if rule_port is None:
+                        logger.debug("no Rule Port found in Uplink.")
+                        return web.json_response({"Status": "Error"}, status=400)
+                    else:
+                        # successful to take a packet from the request.
+                        await protocol.layer2.recv_packet(
+                            bytearray.fromhex(data_hex), rule_port, src_l2_addr)
+                        return web.json_response({"Status": "OK"}, status=202)
         else:
             logger.debug("http request body is not ready.")
             return web.json_response({"Status": "Error"}, status=503)
