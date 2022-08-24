@@ -3,11 +3,14 @@ import json
 from subprocess import Popen
 import atexit
 
-f = open('testgw1-config.json')
-data = json.load(f)
 
+data = {}
 end_devices = []
 routing_processes = []
+
+def init(uri):
+    f = open(uri)
+    data = json.load(f)
 
 def start(interface, url):
     for adr, conf in data['route'].items():
