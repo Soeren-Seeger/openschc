@@ -14,6 +14,7 @@ from gen_rulemanager import *
 import protocol
 from gen_utils import dprint, dpprint, set_debug_output
 
+from WanRouter import WanRouter
 #----
 
 config_default = {
@@ -194,6 +195,9 @@ ap.add_argument("--prog-name", action="store", dest="prog_name",
                 help="specify the name of this program.")
 ap.add_argument("-d", action="store_true", dest="debug_level", default=None,
                 help="specify debug level.")
+ap.add_argument("-i", action="store", dest="interface", default=None,
+                help="specify debug level.")
+
 config = ap.parse_args()
 update_config()
 
@@ -232,5 +236,13 @@ logger.info("Starting {} listening on https://{}:{}/".format(
         config.prog_name,
         config.bind_addr if config.bind_addr else "*",
         config.bind_port))
+
+print("Config file is:", config.config_file)
+print("Interface is:", config.interface)
+wr = WanRouter(config.config_file)
+wr.start(config.interface, 'https://localhost:51225/dl')
+print("Starting WAN-listener for all lpwan-devices...")
 web.run_app(app, host=config.bind_addr, port=config.bind_port,
             ssl_context=ctx, print=None)
+#stop WAN listeners on close
+wr.stop()
