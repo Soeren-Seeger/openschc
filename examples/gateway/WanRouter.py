@@ -20,7 +20,8 @@ def start(interface, url):
         process = Popen(["./packet_picker.py", "-i", interface, url, '--untrust', '-d', '-F', dst],
                         shell=False)
         routing_processes.append(process)'''
-    process = Popen(['./packet_picker.py', '-i', 'ens192', 'https://localhost:51225/dl', '--untrust', '-d', '-F', 'dst 2001:8d8:1801:84dd:d011:1cc1:c483:adc9'],
+
+    process = Popen(['./packet_picker.py', '-i', interface, 'https://localhost:51225/dl', '--untrust', '-d', '-F', 'dst 2001:8d8:1801:84dd:d011:1cc1:c483:adc9'],
                     shell=False)
     routing_processes.append(process)
 
