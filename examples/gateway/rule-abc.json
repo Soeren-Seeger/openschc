@@ -5,7 +5,7 @@
 	    "RuleID": 100,
 	    "RuleIDLength": 8,
 	    "Compression": [
-		{"FID": "IPV6.VER", "TV": 6, "MO": "equal", "CDA": "not-sent"},
+		{"FID": "IPV6.VER", "DI": "UP", "TV": 6, "MO": "equal", "CDA": "not-sent"},
 		{"FID": "IPV6.TC",  "TV": 0, "MO": "ignore", "CDA": "not-sent"},
 		{"FID": "IPV6.FL",  "TV": 0, "MO": "ignore","CDA": "not-sent"},
 		{"FID": "IPV6.LEN",          "MO": "ignore","CDA": "compute-length"},
