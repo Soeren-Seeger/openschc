@@ -851,8 +851,9 @@ class Decompressor:
 
         self.parsed_packet = {}
 
-        rule_send = schc.get_bits(nb_bits=rule[T_RULEIDLENGTH])
-        assert (rule_send == rule["RuleID"])
+        #Correctness is already verified in another step
+        #rule_send = schc.get_bits(nb_bits=rule[T_RULEIDLENGTH])
+        #assert (rule_send == rule["RuleID"])
 
         for r in rule["Compression"]:
             dprint(r)
