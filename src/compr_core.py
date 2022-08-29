@@ -708,15 +708,24 @@ class Decompressor:
         #in_bbuf.display("bin")
 
         val = (rule[T_FID])
-        if val == "IPV6.DEV_IID" or val == "IPV6.APP_IID" or val == "IPV6.DEV_PREFIX" or val == "IPV6.APP_PREFIX" :
+        if val == "IPV6.DEV_IID" or val == "IPV6.APP_IID" or val == "IPV6.DEV_PREFIX" or val == "IPV6.APP_PREFIX":
             print(f"compressor-core:  SCHC IPV6 IP [{val}] - Value send - apply correct format ")
             int_ip = in_bbuf.get_bits(size)
             print(int_ip)
             hex_ip = hex(int_ip)
             hex_ip = hex_ip[2:]
-            bin_ip = binascii.unhexlify(hex_ip)
-            print(bin_ip)
-            val = bin_ip
+            try:
+                bin_ip = binascii.unhexlify(hex_ip)
+                print(bin_ip)
+                val = bin_ip
+            except:
+                print("ODD-String-Problem-Fixer...")
+                print(int_ip)
+                hex_ip = hex_ip.zfill(len(hex_ip) + 1)
+                print(int_ip)
+                bin_ip = binascii.unhexlify(hex_ip)
+                print(bin_ip)
+                val = bin_ip
         else:
             print("NO WHY ??")
             val = in_bbuf.get_bits(size)
